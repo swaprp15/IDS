@@ -1,0 +1,6 @@
+Blocked based on IP
+A new table
+Avoided duplication of username
+
+ToDo
+Maintain correct count for wrong password
