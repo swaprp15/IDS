@@ -66,13 +66,9 @@ public class Login extends HttpServlet {
 				String ipAddressInDb="";
 					// Retrieve by column name
 				rs.next();
-				System.out.println("@@@@@@@@@@@@@@2");
 				cookiesInDb = rs.getString("cookie");
-				System.out.println("=============");
 				browserInDb = rs.getString("browser");
 				ipAddressInDb = rs.getString("ipaddress");
-				
-				System.out.println("cookiesInDb"+cookiesInDb);
 				
 				
 			
@@ -123,7 +119,8 @@ public class Login extends HttpServlet {
 				
 				System.out.println("----1------"+cookiesInDb);
 				
-				if(cookiesInDb.trim().compareToIgnoreCase("q")==0)
+				// First login
+				if(cookiesInDb.trim().compareToIgnoreCase("null")==0)
 				{
 					System.out.println("Value="+CookieValuetoBeStoredInDb);
 					String valueToBeUpdated="UPDATE STUDENT SET cookie='"+CookieValuetoBeStoredInDb+"', ipaddress='"+ipAddressToBeStoredInDb+"' , browser='"+browserNameToBeStoredInDb+"' WHERE username = '"+userName+"'";
@@ -136,29 +133,33 @@ public class Login extends HttpServlet {
 					String tokenForBrowser[] = browserInDb.split("-");
 					String tokenipAddress[] = ipAddressInDb.split("-");
 					
-					int checkValue=0;
+					boolean cookiesMatch = false;
 					int i;
 					for(i=0;i<tokenForCookie.length;i++)
 					{
 						if(tokenForCookie[i].compareToIgnoreCase(CookieValuetoBeStoredInDb)==0)
 						{
-							checkValue = 1;
+							cookiesMatch = true;
 							 break;
 						}
 					}
-					if(checkValue == 1)
+					
+					if(cookiesMatch == true)
 					{
+						// If from same browser and same IP address then allow.
 						if(tokenForBrowser[i].compareToIgnoreCase(browserNameToBeStoredInDb)==0 && tokenipAddress[i].compareToIgnoreCase(ipAddressToBeStoredInDb)==0)
 						{
-							System.out.println("true1");
+							//System.out.println("true1");
 							return true;
 						}
-						// Stored cookie and address do NOT match
-						System.out.println("Stored cookie and address do NOT match");
+						
+						// Stored browser and address do NOT match
 						return false;
 					}
 					else
 					{
+						// New cookie from user
+						
 						CookieValuetoBeStoredInDb = cookiesInDb+"-"+CookieValuetoBeStoredInDb ;
 						ipAddressToBeStoredInDb = ipAddressInDb +"-" + ipAddressToBeStoredInDb;
 						browserNameToBeStoredInDb = browserInDb + "-" + browserNameToBeStoredInDb;
@@ -352,7 +353,7 @@ public class Login extends HttpServlet {
 						//pw.println("Congrates Login ");
 						if(returnValue ==  true)
 						{
-							RequestDispatcher RequetsDispatcherObj =request.getRequestDispatcher("/teru.jsp");
+							RequestDispatcher RequetsDispatcherObj =request.getRequestDispatcher("/Success.jsp");
 							RequetsDispatcherObj.forward(request, response);
 						}
 						else
@@ -375,14 +376,14 @@ public class Login extends HttpServlet {
 		//			stmt.executeUpdate(valueToBeUpdated);
 					if(returnValue ==  true)
 					{
-						RequestDispatcher RequetsDispatcherObj =request.getRequestDispatcher("/teru.jsp");
+						RequestDispatcher RequetsDispatcherObj =request.getRequestDispatcher("/Success.jsp");
 						RequetsDispatcherObj.forward(request, response);
 					}
 					else
 					{
 						pw.println("Sorry... Cookie and address did not match");
 					}
-				//	RequestDispatcher RequetsDispatcherObj =request.getRequestDispatcher("/teru.jsp");
+				//	RequestDispatcher RequetsDispatcherObj =request.getRequestDispatcher("/Success.jsp");
 				//	RequetsDispatcherObj.forward(request, response);
 					
 				}

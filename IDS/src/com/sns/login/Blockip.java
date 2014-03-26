@@ -3,6 +3,7 @@ package com.sns.login;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Blockip {
@@ -19,7 +20,13 @@ public class Blockip {
 	{
 		//count++;
 		
-		Connection conn = (Connection) DBhelper.getConnection();
+		Connection conn = null;
+		try {
+			conn = (Connection) DBhelper.getConnection();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try
 		{
@@ -84,7 +91,7 @@ public class Blockip {
 				month1 = Integer.parseInt(token[1]);
 				day1 = Integer.parseInt(token[2]);
 				
-				if(day ==  day1 && month ==  month1 && year == year1)
+				if(day ==  day1 && month == month1 && year == year1)
 				{
 					count++;
 					System.out.println("day1="+day+"count1="+count);
@@ -95,7 +102,7 @@ public class Blockip {
 					year= year1;
 					month = month1;
 					day = day1;
-					return false;
+					//return false;
 				}
 				
 				PreparedStatement pst = conn.prepareStatement("UPDATE IPADDR_STATS set count = ? , lastAccessTime = ? where ipAddress = ?");

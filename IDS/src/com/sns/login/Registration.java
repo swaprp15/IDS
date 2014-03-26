@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 
 
 
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -51,10 +52,9 @@ public class Registration extends HttpServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		// TODO Auto-generated method stub
-		String uname = request.getParameter("username");
-		String pwd = request.getParameter("password");
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 		
-		System.out.println("User name : " + uname);
 		PrintWriter pw=response.getWriter();
 		Connection conn = null;
 		Statement stmt = null;
@@ -63,66 +63,90 @@ public class Registration extends HttpServlet
 		
 		//get current date time with Date()
 		Date date = new Date();
-		System.out.println("Current date : " + dateFormat.format(date));
 	 
 		String currtime=dateFormat.format(date);
 		
 		//get current date time with Calendar()
 		Calendar cal = Calendar.getInstance();
-		System.out.println(dateFormat.format(cal.getTime()));
 		String splitValue[] = currtime.split(" "); 
 		
-		boolean returnvalue=Blockip.block(request.getRemoteAddr(),splitValue[0]);
+		boolean returnvalue = Blockip.block(request.getRemoteAddr(),splitValue[0]);
 		
-		
-		//boolean returnvalue=Blockip.block(request.getRemoteAddr());
 		if(returnvalue == true )
 		{
 			pw.print("Sorry... Too many requests from IP");
 			return ;
 		}
 		
-		try {
-			// STEP 2: Register JDBC driver
-			Class.forName("com.mysql.jdbc.Driver");
-
+		try 
+		{
 			// STEP 3: Open a connection
-			System.out.println("Connecting to database...");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/IDS",
-					"root", "mysql");
+			conn = DBhelper.getConnection();
 
 			// STEP 4: Execute a query
-			System.out.println("Creating statement...");
 			stmt = conn.createStatement();
+			
 			String sql;
+			
+			// First check for duplicate
+			sql = "SELECT count(username) from STUDENT where username = '" + username + "'" ;
+			
+			ResultSet result = stmt.executeQuery(sql);
+			
+			while(result.next())
+			{
+				if(result.getInt(1) > 0)
+				{
+					pw.println("Username already exists. Please use another username.");
+					stmt.close();
+					conn.close();
+					return;
+				}
+			}
 		
 		 
-			sql="INSERT INTO STUDENT (username,password,blockvalue,timeStamp,cookie,browser,ipaddress) VALUES ('"+uname+"','"+pwd+"','"+0+"','"+null+"','q','q','q')";
+			sql="INSERT INTO STUDENT (username,password,blockvalue,timeStamp,cookie,browser,ipaddress) VALUES ('" + username + "','"+ password +"','" + 0 + "','" + null + "','null','null','null')";
 			stmt.executeUpdate(sql);
 
+
+			pw.println("Registration successful.");
 			
 			stmt.close();
 			conn.close();
-		} catch (SQLException se) {
+		}
+		catch (SQLException se)
+		{
 			// Handle errors for JDBC
 			se.printStackTrace();
-		} catch (Exception e) {
+		}
+		catch (Exception e) 
+		{
 			// Handle errors for Class.forName
 			e.printStackTrace();
-		} finally {
+		}
+		finally 
+		{
 			// finally block used to close resources
-			try {
+			try 
+			{
 				if (stmt != null)
 					stmt.close();
-			} catch (SQLException se2) {
-			}// nothing we can do
-			try {
+			}
+			catch (SQLException se2) 
+			{
+			}
+			// nothing we can do
+			try 
+			{
 				if (conn != null)
 					conn.close();
-			} catch (SQLException se) {
+			}
+			catch (SQLException se) 
+			{	
 				se.printStackTrace();
 			}// end finally try
 		}// end try
+		
 		System.out.println("Goodbye!");
 
 	}

@@ -24,7 +24,7 @@ if(cookies!=null){
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Please Login</title>
 <script  src="jquery.js"></script>
 <script src="jquery.motionCaptcha.0.2.js"></script>
 <link rel="stylesheet" href="captcha.css"></link>
@@ -66,7 +66,7 @@ if(cookies!=null){
 			</tr>
 			<tr>
 				<td><input  type="submit" value="login" id="login" disabled="disabled"/></td>
-				<td><a href="registration.jsp"/>Registration</td>
+				<td>Click <a href="Registration.jsp"/>here</a> to register</td>
 			</tr>
 			<%= request.getAttribute("count") %>
 			<%= request.getRemoteAddr()%>
